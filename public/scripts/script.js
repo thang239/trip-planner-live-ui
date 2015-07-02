@@ -149,11 +149,11 @@ var daysChoice = [{hotel:[],restaurant:[],thing:[]}];
 var arr = ['hotel','restaurant','thing'];
 $(document).ready(function() {
     initialize_gmaps();
-    
     arr.forEach(addChoice);
     removeChoice();
     addDay();
     getCurrentDay();
+    removeDay();
 });
 
 function addChoice(str){
@@ -200,20 +200,48 @@ function getCurrentDay(){
         $(this).addClass('current-day');
         $('#day-title span').text("Day " + $(this).text())
         arr.forEach(function(s){
-            console.log(s);
             $('#'+s+'Added').empty();
-            console.log(Number($('.current-day').text())-1);
             daysChoice[Number($('.current-day').text())-1][s].forEach(function(q){
                 $('#'+s+'Added').append('<div class="itinerary-item"><span class="title">'+q+'</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
             })
 
         });
     })
-    // $('#.hotelAdded').empty();
+}
+
+function removeDay(){
+    $(".remove-current").on('click',function(){
+        var indexArray = Number($('.current-day').text())-1;
+        daysChoice.splice(indexArray,1);
+        var $currentday = $('.current-day');
+        $currentday.removeClass('current-day')
+        if ($currentday.text() == "1"){
+            $currentday.next().addClass('current-day');
+            shiftDays($currentday);
+            $currentday.next().trigger('click');
+        }
+        else {
+            $currentday.prev().addClass('current-day');
+            shiftDays($currentday);
+            $currentday.prev().trigger('click');        
+        }
+        $currentday.remove();
+    })
+}
+
+function shiftDays($currentday){
+    Array.prototype.slice.call($currentday.nextAll()).forEach(function(sibling){
+        var tempText = Number($(sibling).text());
+        if (!isNaN(tempText)) $(sibling).text(--tempText);
+    })
 }
 
 
 
 
-//
-//Array of days contain hotels,restaurants,things to do.
+
+
+
+
+
+
