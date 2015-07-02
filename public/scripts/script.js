@@ -197,7 +197,8 @@ function getCurrentDay(){
     
     $('.day-buttons').on('click','.day',function(){
         $('.current-day').removeClass('current-day');
-        $(this).addClass('current-day')
+        $(this).addClass('current-day');
+        $('#day-title span').text("Day " + $(this).text())
         arr.forEach(function(s){
             console.log(s);
             $('#'+s+'Added').empty();
