@@ -145,12 +145,15 @@ function initialize_gmaps() {
 		    });
 		}
 
+var daysChoice = [{hotel:[],restaurant:[],thing:[]}];
+var arr = ['hotel','restaurant','thing'];
 $(document).ready(function() {
     initialize_gmaps();
-    var arr = ['hotel','restaurant','thing']
+    
     arr.forEach(addChoice);
     removeChoice();
     addDay();
+    getCurrentDay();
 });
 
 function addChoice(str){
@@ -160,25 +163,56 @@ function addChoice(str){
 			if($('#'+str+'Added').text().indexOf(selection)===-1){
 
 				$('#'+str+'Added').append('<div class="itinerary-item"><span class="title">'+selection+'</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
-			     // removeChoice(selection);
-
+			     var indexOfDay = Number($('.current-day').text())-1;
+                 if(daysChoice[indexOfDay]===undefined) daysChoice[indexOfDay]={};
+                 // if(daysChoice[indexOfDay][str]===undefined) daysChoice[indexOfDay][str]=[];
+                 daysChoice[indexOfDay][str].push(selection);
             };
 
         })
 }
+
+
+
 function removeChoice(){
     $('.panel-body').on('click', '.remove', function(){
         $(this).parent().remove();
     })
 }
 
+// function 
 
 function addDay(){
     $('#add-btn').on('click', function(){
         var $before = parseInt($(this).prev().text());
+        daysChoice[$before]={hotel:[],restaurant:[],thing:[]};
         $before++;
         //console.log($before);
-         $(this).before(' <button class="btn btn-circle day-btn">'+ $before.toString() +'</button> ');
+
+         $(this).before(' <button class="btn btn-circle day-btn day">'+ $before.toString() +'</button> ');
     })
 }
 
+function getCurrentDay(){
+    
+    $('.day-buttons').on('click','.day',function(){
+        $('.current-day').removeClass('current-day');
+        $(this).addClass('current-day')
+        arr.forEach(function(s){
+            console.log(s);
+            $('#'+s+'Added').empty();
+            console.log(Number($('.current-day').text())-1);
+            daysChoice[Number($('.current-day').text())-1][s].forEach(function(q){
+                $('#'+s+'Added').append('<div class="itinerary-item"><span class="title">'+q+'</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
+            })
+
+        });
+    })
+    // $('#.hotelAdded').empty();
+}
+
+
+
+
+//
+//Array of days contain hotels,restaurants,things to do.
