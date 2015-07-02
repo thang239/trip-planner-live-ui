@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/tripplanner');
+mongoose.connect('mongodb://localhost/TripPlanner');
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 
 var placeSchema = new mongoose.Schema({

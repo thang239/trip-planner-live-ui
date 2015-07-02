@@ -54,9 +54,9 @@
 				<div class="panel-heading">
 					<div class="day-buttons">
 						<button class="btn btn-circle day-btn">1</button>
-						<button class="btn btn-circle day-btn current-day">2</button>
+						<button class="btn btn-circle day-btn">2</button>
 						<button class="btn btn-circle day-btn">3</button>
-						<button class="btn btn-circle day-btn">+</button>
+						<button class="btn btn-circle day-btn" id = "add-btn">+</button>
 					</div>
 				</div>
 				<div class="panel-body">
@@ -97,7 +97,7 @@
 	</div>
 </div>
 
-<script>
+<!-- <script>
 {% autoescape false %}
 var all_hotels = {{ hotels | json }};
 var all_restaurants = {{ restaurants | json }};
@@ -105,13 +105,4 @@ var all_things_to_do = {{ things_to_do | json }};
 {% endautoescape %}
 </script>
 
-{% endblock %}
-
-
-<script>
-{% autoescape false %}
-var all_hotels = {{ hotels | json }};
-var all_restaurants = {{ restaurants | json }};
-var all_things_to_do = {{ things_to_do | json }};
-{% endautoescape %}
-</script>
+{% endblock %} -->

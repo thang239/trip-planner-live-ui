@@ -149,6 +149,8 @@ $(document).ready(function() {
     initialize_gmaps();
     var arr = ['hotel','restaurant','thing']
     arr.forEach(addChoice);
+    removeChoice();
+    addDay();
 });
 
 function addChoice(str){
@@ -157,14 +159,26 @@ function addChoice(str){
 		var selection = $('#'+str+'Select').val();
 			if($('#'+str+'Added').text().indexOf(selection)===-1){
 
-				$('#'+str+'Added').append('<div class="itinerary-item" ><span class="title">'+selection+'</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
+				$('#'+str+'Added').append('<div class="itinerary-item"><span class="title">'+selection+'</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
+			     // removeChoice(selection);
 
-			};
-		})
+            };
+
+        })
+}
+function removeChoice(){
+    $('.panel-body').on('click', '.remove', function(){
+        $(this).parent().remove();
+    })
 }
 
 
-
-
-
+function addDay(){
+    $('#add-btn').on('click', function(){
+        var $before = parseInt($(this).prev().text());
+        $before++;
+        //console.log($before);
+         $(this).before(' <button class="btn btn-circle day-btn">'+ $before.toString() +'</button> ');
+    })
+}
 
