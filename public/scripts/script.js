@@ -146,6 +146,7 @@ function initialize_gmaps() {
 		}
 
 var daysChoice = [{hotel:[],restaurant:[],thing:[]}];
+var latLongChoice = []
 var arr = ['hotel','restaurant','thing'];
 $(document).ready(function() {
     initialize_gmaps();
@@ -173,10 +174,18 @@ function addChoice(str){
 }
 
 
-
+//NEED TO REMOVE FROM "DATABASE" AFTER REMOVING
 function removeChoice(){
     $('.panel-body').on('click', '.remove', function(){
-        $(this).parent().remove();
+        var $this = $(this);
+        var choiceType = $this.parent().parent().attr('class').split(" ")[1];
+        var nameToRemove = $this.prev().text();
+        var dayIndex = Number($(".current-day").text())-1;
+        daysChoice[dayIndex][choiceType] = daysChoice[dayIndex][choiceType].filter(function(activity){
+            if (activity === nameToRemove) return false;
+            return true;
+        })
+        $this.parent().remove();
     })
 }
 
@@ -184,6 +193,7 @@ function removeChoice(){
 
 function addDay(){
     $('#add-btn').on('click', function(){
+
         var $before = parseInt($(this).prev().text());
         daysChoice[$before]={hotel:[],restaurant:[],thing:[]};
         $before++;
@@ -235,6 +245,7 @@ function shiftDays($currentday){
         if (!isNaN(tempText)) $(sibling).text(--tempText);
     })
 }
+
 
 
 
