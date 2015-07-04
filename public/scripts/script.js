@@ -6,7 +6,8 @@ var daysChoice = [{
     restaurantLocations: [],
     thingLocations: []
 }];
-
+//a single array of markers for quick removal of all of them.
+var markers = []
 var arr = ['hotel', 'restaurant', 'thing'];
 
 $(document).ready(function() {
@@ -80,6 +81,7 @@ var styleArr = [{
     }]
 }, {}]
 
+
 var map;
 
 function initialize_gmaps() {
@@ -102,41 +104,26 @@ function initialize_gmaps() {
         title: "Hello World!"
     });
 
-    // draw some locations
-    var hotelLocation = [40.705137, -74.007624];
-    var restaurantLocations = [
-        [40.705137, -74.013940],
-        [40.708475, -74.010846]
-    ];
-    var thingToDoLocations = [
-        [40.716291, -73.995315],
-        [40.707119, -74.003602]
-    ];
+}
 
-    function drawLocation(location, opts) {
-        if (typeof opts !== 'object') {
-            opts = {}
-        }
-        opts.position = new google.maps.LatLng(location[0], location[1]);
-        opts.map = map;
-        var marker = new google.maps.Marker(opts);
-    }
-    drawLocation(hotelLocation, {
-        icon: '/images/lodging_0star.png'
-    });
-    restaurantLocations.forEach(function(loc) {
-        drawLocation(loc, {
-            icon: '/images/restaurant.png'
-        });
-    });
-    thingToDoLocations.forEach(function(loc) {
-        drawLocation(loc, {
-            icon: '/images/star-3.png'
-        });
-    });
+function drawLocation(location, typeOfActivity) {
+    opts = {};
+    if (typeOfActivity === "hotel") opts.icon = '/images/lodging_0star.png';
+    else if (typeOfActivity === "restaurant") opts.icon = '/images/restaurant.png';
+    else if (typeOfActivity === "thing") opts.icon = '/images/star-3.png'
+    opts.position = new google.maps.LatLng(location[0], location[1]);
+    opts.map = map;
+    return new google.maps.Marker(opts);
+}
+
+function clearMarkers() {
+    markers.forEach(function(marker) {
+        marker.setMap(null);
+    })
 }
 
 function addChoice(str) {
+    //should map be centered on choice?
     $('#' + str + 'Add').on('click', function() {
 
         var selection = $('#' + str + 'Select').val();
@@ -145,19 +132,21 @@ function addChoice(str) {
             // adds lat/long for each day added to locations arrays.
             dataObj[str].forEach(function(poi) {
                 if (poi.name === selection) {
-                    daysChoice[indexOfDay][str + "Locations"].push(poi.place[0].location);
+                    var marker = drawLocation(poi.place[0].location, str)
+                    daysChoice[indexOfDay][str + "Locations"].push(marker);
+                    markers.push(marker);
                 }
             })
             $('#' + str + 'Added').append('<div class="itinerary-item"><span class="title">' + selection + '</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
             var indexOfDay = Number($('.current-day').text()) - 1;
             daysChoice[indexOfDay][str].push(selection);
         };
-        console.log(daysChoice[indexOfDay]);
     })
 }
 
 
 function removeChoice() {
+    //need to remove map ping when you remove a choice
     $('.panel-body').on('click', '.remove', function() {
         var $this = $(this);
         var choiceType = $this.parent().parent().attr('class').split(" ")[1];
@@ -166,7 +155,7 @@ function removeChoice() {
         daysChoice[dayIndex][choiceType] = daysChoice[dayIndex][choiceType].filter(function(activity, index) {
             if (activity === nameToRemove) {
                 //will remove the lat/long for the choice removed
-                daysChoice[dayIndex][choiceType + "Locations"].splice(index, 1);
+                var marker = daysChoice[dayIndex][choiceType + "Locations"].splice(index, 1)[0].setMap(null);
                 return false;
             }
             return true;
@@ -194,14 +183,19 @@ function addDay() {
     })
 }
 
+//loads central location of map as being hotel?
 function getCurrentDay() {
     $('.day-buttons').on('click', '.day', function() {
+        //remove all markers from map. 
+        clearMarkers();
         $('.current-day').removeClass('current-day');
         $(this).addClass('current-day');
         $('#day-title span').text("Day " + $(this).text())
         arr.forEach(function(s) {
             $('#' + s + 'Added').empty();
-            daysChoice[Number($('.current-day').text()) - 1][s].forEach(function(q) {
+            var indexOfDay = Number($('.current-day').text()) - 1;
+            daysChoice[indexOfDay][s].forEach(function(q, index) {
+                daysChoice[indexOfDay][s + "Locations"][index].setMap(map);
                 $('#' + s + 'Added').append('<div class="itinerary-item"><span class="title">' + q + '</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
             })
         });
