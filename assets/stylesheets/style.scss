@@ -133,10 +133,12 @@ h3 {
 	// 		background: #fff;
 	// 	}
 	// }
+
 	&:focus{
-		background-color: #a8c9dd
-	}
-	
+	background-color: $light-blue;
+	border-color: #fff;
+	color: #fff;
+}
 }
 
 .panel-default {
@@ -186,5 +188,7 @@ h3 {
 }
 
 .current-day{
-	
+	background-color: $light-blue;
+	border-color: #fff;
+	color: #fff;
 }

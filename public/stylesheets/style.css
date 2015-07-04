@@ -98,7 +98,9 @@ h3 {
     border-color: #fff;
     color: #fff; }
   .day-btn:focus {
-    background-color: #a8c9dd; }
+    background-color: #a8c9dd;
+    border-color: #fff;
+    color: #fff; }
 
 .panel-default {
   background: #efecea;
@@ -134,3 +136,8 @@ h3 {
     vertical-align: middle; }
   #day-title > .remove {
     margin-left: 1em; }
+
+.current-day {
+  background-color: #a8c9dd;
+  border-color: #fff;
+  color: #fff; }

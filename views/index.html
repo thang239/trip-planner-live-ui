@@ -97,12 +97,13 @@
 	</div>
 </div>
 
-<!-- <script>
+<script>
 {% autoescape false %}
-var all_hotels = {{ hotels | json }};
-var all_restaurants = {{ restaurants | json }};
-var all_things_to_do = {{ things_to_do | json }};
+var dataObj = {}
+dataObj.hotel = {{ all_hotels | json }};
+dataObj.restaurant = {{ all_restaurants | json }};
+dataObj.thing = {{ all_things_to_do | json }};
 {% endautoescape %}
 </script>
 
-{% endblock %} -->
+{% endblock %}
