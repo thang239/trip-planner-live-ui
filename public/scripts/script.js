@@ -1,3 +1,7 @@
+//refactor to use google places api instead of our mongoDB (more locations)
+//can type in a city and it will offer drop down list in 50 mile radius?
+//can center map on the city/place entered
+
 var daysChoice = [{
     hotel: [],
     restaurant: [],
@@ -125,7 +129,6 @@ function clearMarkers() {
 function addChoice(str) {
     //should map be centered on choice?
     $('#' + str + 'Add').on('click', function() {
-
         var selection = $('#' + str + 'Select').val();
         if ($('#' + str + 'Added').text().indexOf(selection) === -1) {
             var indexOfDay = Number($('.current-day').text()) - 1;
@@ -138,7 +141,6 @@ function addChoice(str) {
                 }
             })
             $('#' + str + 'Added').append('<div class="itinerary-item"><span class="title">' + selection + '</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
-            var indexOfDay = Number($('.current-day').text()) - 1;
             daysChoice[indexOfDay][str].push(selection);
         };
     })
@@ -188,17 +190,22 @@ function getCurrentDay() {
     $('.day-buttons').on('click', '.day', function() {
         //remove all markers from map. 
         clearMarkers();
-        $('.current-day').removeClass('current-day');
+        var $currentDay = $(".current-day");
+        $currentDay.removeClass('current-day');
         $(this).addClass('current-day');
         $('#day-title span').text("Day " + $(this).text())
+        var indexOfDay = Number($('.current-day').text()) - 1;
         arr.forEach(function(s) {
-            $('#' + s + 'Added').empty();
-            var indexOfDay = Number($('.current-day').text()) - 1;
+            var $s = $('#' + s + 'Added');
+            $s.empty();
             daysChoice[indexOfDay][s].forEach(function(q, index) {
                 daysChoice[indexOfDay][s + "Locations"][index].setMap(map);
-                $('#' + s + 'Added').append('<div class="itinerary-item"><span class="title">' + q + '</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
+                $s.append('<div class="itinerary-item"><span class="title">' + q + '</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
             })
         });
+        if (daysChoice[indexOfDay].hotelLocations.length > 0) {
+            map.panTo(daysChoice[indexOfDay].hotelLocations[0].getPosition());
+        }
     })
 }
 
