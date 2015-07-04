@@ -140,15 +140,19 @@ function addChoice(str) {
     $('#' + str + 'Add').on('click', function() {
 
         var selection = $('#' + str + 'Select').val();
-        //take lat/long from selection and add to locations array.
-        //console.dir(dataObj[str]);
-        //dataObj[str].forEach(function())
         if ($('#' + str + 'Added').text().indexOf(selection) === -1) {
+            var indexOfDay = Number($('.current-day').text()) - 1;
+            // adds lat/long for each day added to locations arrays.
+            dataObj[str].forEach(function(poi) {
+                if (poi.name === selection) {
+                    daysChoice[indexOfDay][str + "Locations"].push(poi.place[0].location);
+                }
+            })
             $('#' + str + 'Added').append('<div class="itinerary-item"><span class="title">' + selection + '</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
             var indexOfDay = Number($('.current-day').text()) - 1;
             daysChoice[indexOfDay][str].push(selection);
         };
-
+        console.log(daysChoice[indexOfDay]);
     })
 }
 
@@ -159,10 +163,15 @@ function removeChoice() {
         var choiceType = $this.parent().parent().attr('class').split(" ")[1];
         var nameToRemove = $this.prev().text();
         var dayIndex = Number($(".current-day").text()) - 1;
-        daysChoice[dayIndex][choiceType] = daysChoice[dayIndex][choiceType].filter(function(activity) {
-            if (activity === nameToRemove) return false;
+        daysChoice[dayIndex][choiceType] = daysChoice[dayIndex][choiceType].filter(function(activity, index) {
+            if (activity === nameToRemove) {
+                //will remove the lat/long for the choice removed
+                daysChoice[dayIndex][choiceType + "Locations"].splice(index, 1);
+                return false;
+            }
             return true;
         })
+        console.log(daysChoice[dayIndex]);
         $this.parent().remove();
     })
 }
@@ -174,7 +183,10 @@ function addDay() {
         daysChoice[$before] = {
             hotel: [],
             restaurant: [],
-            thing: []
+            thing: [],
+            hotelLocations: [],
+            restaurantLocations: [],
+            thingLocations: []
         };
         $before++;
 
