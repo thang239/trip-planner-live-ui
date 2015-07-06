@@ -138,7 +138,7 @@ function addChoice(str) {
             // adds lat/long for each day added to locations arrays.
             dataObj[str].forEach(function(poi) {
                 if (poi.name === selection) {
-                    var marker = drawLocation(poi.place[0].location, str)
+                    var marker = drawLocation(poi.place[0].location, str);
                     bounds.extend(marker.position);
                     map.fitBounds(bounds);
                     daysChoice[indexOfDay][str + "Locations"].push(marker);
