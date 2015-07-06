@@ -15,6 +15,7 @@ var markers = []
 var arr = ['hotel', 'restaurant', 'thing'];
 
 $(document).ready(function() {
+    initialize();
     initialize_gmaps();
     arr.forEach(addChoice);
     removeChoice();
@@ -267,3 +268,15 @@ function shiftDays($currentday) {
 //Based off the city, map is initialized focusing on a location for that.
 //Will provide a list on the side of places within a 50 mile radius??
 //Will slap on the map a list of places within a 50 mile radius and you can click on it? Filter by hotels/restaurants/things to do?
+
+//Initialize homepage autocomplete form
+function initialize() {
+    // Create the autocomplete object, restricting the search
+    // to geographical location types.
+    autocomplete = new google.maps.places.Autocomplete(
+            /** @type {HTMLInputElement} */
+            (document.getElementById('autocomplete')), {
+                types: ['(cities)']
+            })
+        // When the user selects an address from the dropdown,
+}
