@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block title %}It's a Destination Investigation{% endblock %}
+
+{% block content %}
+
+<form id = "mapSearch" method = "GET" action= "/map">
+<div id="locationField">
+	<input name = "mapSearch" id="autocomplete" placeholder="Where to?" type="text"></input>
+</div>
+	<input type = "submit" value = "Submit"></input>
+</form>
+
+{% endblock %}

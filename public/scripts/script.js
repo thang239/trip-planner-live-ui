@@ -15,6 +15,7 @@ var markers = []
 var arr = ['hotel', 'restaurant', 'thing'];
 
 $(document).ready(function() {
+    initialize();
     initialize_gmaps();
     arr.forEach(addChoice);
     removeChoice();
@@ -104,7 +105,24 @@ function initialize_gmaps() {
     var map_canvas_obj = document.getElementById("map-canvas");
     // initialize a new Google Map with the options
     map = new google.maps.Map(map_canvas_obj, mapOptions);
-    // Add the marker to the map
+    var service = new google.maps.places.PlacesService(map);
+    service.nearbySearch({
+            location: myLatlng,
+            radius: "50000",
+            types: ['store']
+        }, function(results, status) {
+            if (status == google.maps.places.PlacesServiceStatus.OK) {
+                results.forEach(function(place, index) {
+                    console.log(index, place);
+                    new google.maps.Marker({
+                        position: place.geometry.location,
+                        map: map,
+                        title: place.name
+                    })
+                })
+            }
+        })
+        // Add the marker to the map
     var marker = new google.maps.Marker({
         position: myLatlng,
         title: "Hello World!"
@@ -117,7 +135,8 @@ function drawLocation(location, typeOfActivity) {
     var opts = {};
     if (typeOfActivity === "hotel") opts.icon = '/images/lodging_0star.png';
     else if (typeOfActivity === "restaurant") opts.icon = '/images/restaurant.png';
-    else if (typeOfActivity === "thing") opts.icon = '/images/star-3.png'
+    else if (typeOfActivity === "thing") opts.icon = '/images/star-3.png';
+    else opts.icon = opts.icon = '/images/star-3.png';
     opts.position = new google.maps.LatLng(location[0], location[1]);
     opts.map = map;
     return new google.maps.Marker(opts);
@@ -167,7 +186,6 @@ function removeChoice() {
             }
             return true;
         })
-        console.log(daysChoice[dayIndex]);
         $this.parent().remove();
     })
 }
@@ -208,7 +226,6 @@ function getCurrentDay() {
                 daysChoice[indexOfDay][s + "Locations"][index].setMap(map);
                 bounds.extend(daysChoice[indexOfDay][s + "Locations"][index].position);
                 map.fitBounds(bounds);
-                console.log(bounds);
                 $s.append('<div class="itinerary-item"><span class="title">' + q + '</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
             })
         });
@@ -243,4 +260,23 @@ function shiftDays($currentday) {
         var tempText = Number($(sibling).text());
         if (!isNaN(tempText)) $(sibling).text(--tempText);
     })
+}
+//THINGS RELATED TO GOOGLE PLACES TO RETRIEVE DATA//
+//OUTLINE
+
+// Need to be able to input a city/place (use Google Places autocomplete feature)
+//Based off the city, map is initialized focusing on a location for that.
+//Will provide a list on the side of places within a 50 mile radius??
+//Will slap on the map a list of places within a 50 mile radius and you can click on it? Filter by hotels/restaurants/things to do?
+
+//Initialize homepage autocomplete form
+function initialize() {
+    // Create the autocomplete object, restricting the search
+    // to geographical location types.
+    autocomplete = new google.maps.places.Autocomplete(
+            /** @type {HTMLInputElement} */
+            (document.getElementById('autocomplete')), {
+                types: ['(cities)']
+            })
+        // When the user selects an address from the dropdown,
 }
