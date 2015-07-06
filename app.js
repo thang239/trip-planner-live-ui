@@ -1,8 +1,8 @@
 var express = require('express'),
-	logger = require('morgan'),
-	bodyParser = require('body-parser'),
-	swig = require('swig'),
-	sassMiddleware = require('node-sass-middleware');
+    logger = require('morgan'),
+    bodyParser = require('body-parser'),
+    swig = require('swig'),
+    sassMiddleware = require('node-sass-middleware');
 
 var app = express();
 
@@ -10,12 +10,16 @@ var app = express();
 app.set('views', __dirname + '/views');
 app.set('view engine', 'html');
 app.engine('html', swig.renderFile);
-swig.setDefaults({cache: false});
+swig.setDefaults({
+    cache: false
+});
 
 // log and body parse
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
 
 // sass middleware
 app.use(
@@ -31,7 +35,7 @@ app.use('/bower_components', express.static(__dirname + '/bower_components'));
 app.use(express.static(__dirname + '/public'));
 
 // serve root
-app.get('/', require('./routes'));
+app.use('/', require('./routes'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -43,14 +47,16 @@ app.use(function(req, res, next) {
 // handle any errors
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    console.log({error: err});
+    console.log({
+        error: err
+    });
     res.render('error', {
-    	error: err
+        error: err
     });
 });
 
 // listen on a port
 var port = 3000;
-app.listen(port, function () {
-	console.log('The server is listening closely on port', port);
+app.listen(port, function() {
+    console.log('The server is listening closely on port', port);
 });
