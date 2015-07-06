@@ -88,6 +88,7 @@ var styleArr = [{
 
 var map;
 var bounds;
+var infoWindow = new google.maps.InfoWindow();
 
 var myLatlng = new google.maps.LatLng(40.705786, -74.007672);
 function initialize_gmaps() {
@@ -141,10 +142,24 @@ function addChoice(str) {
             var indexOfDay = Number($('.current-day').text()) - 1;
             // adds lat/long for each day added to locations arrays.
             dataObj[str].forEach(function(poi) {
+                // console.log(poi);
                 if (poi.name === selection) {
                     var marker = drawLocation(poi.place[0].location, str)
+                    //bound the map to fit all items
                     bounds.extend(marker.position);
                     map.fitBounds(bounds);
+                    //add event listener for the marker
+                    var contentString = getInfoString(poi,str);
+                    //clear opened window
+                    if (infoWindow) {
+                            infoWindow.close();
+                    }
+                    //set event listener for marker
+                    google.maps.event.addListener(marker, 'click', function(){
+                        infoWindow.setContent(contentString);
+                        infoWindow.open(map,marker);
+                    });
+                    //push the marker to it's day
                     daysChoice[indexOfDay][str + "Locations"].push(marker);
                     markers.push(marker);
                 }
@@ -155,6 +170,31 @@ function addChoice(str) {
     })
 }
 
+function getInfoString(poi,str){
+    var res = '';
+    res+='<h3>'+poi.name+'</h3>';
+    if(str==='thing'){
+        res+='<p>Age range: '+poi.age_range+'</p>';
+    }
+    if(str==='restaurant'){
+        res+='<p>Cuisine: '+poi.cuisine+'</p>';
+    }
+    if(str==='hotel'){
+        res+='<p>'+getStars(poi.num_stars)+'</p>'+'<p>Amenities: '+poi.amenities+'</p>';
+    }
+    res+='<p>Address: '+poi.place[0].address+', '+poi.place[0].city+'</p>'
+            +'<p>Phone: '+poi.place[0].phone+'</p>';
+
+    return res;
+}
+
+function getStars(num){
+    var res='';
+    for(var i=0;i<num;i++){
+        res+='&#127775';
+    }
+    return res;
+}
 
 function removeChoice() {
     //need to remove map ping when you remove a choice
@@ -171,7 +211,7 @@ function removeChoice() {
             }
             return true;
         })
-        console.log(daysChoice[dayIndex]);
+        // console.log(daysChoice[dayIndex]);
         $this.parent().remove();
     })
 }
@@ -189,7 +229,6 @@ function addDay() {
             thingLocations: []
         };
         $before++;
-
         $(this).before(' <button class="btn btn-circle day-btn day">' + $before.toString() + '</button> ');
     })
 }
