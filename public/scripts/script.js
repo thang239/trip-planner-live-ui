@@ -87,8 +87,10 @@ var styleArr = [{
 
 
 var map;
+var bounds;
 
 function initialize_gmaps() {
+    bounds = new google.maps.LatLngBounds();
     // initialize new google maps LatLng object
     var myLatlng = new google.maps.LatLng(40.705786, -74.007672);
     // set the map options hash
@@ -110,8 +112,9 @@ function initialize_gmaps() {
 
 }
 
+//google maps manipulation
 function drawLocation(location, typeOfActivity) {
-    opts = {};
+    var opts = {};
     if (typeOfActivity === "hotel") opts.icon = '/images/lodging_0star.png';
     else if (typeOfActivity === "restaurant") opts.icon = '/images/restaurant.png';
     else if (typeOfActivity === "thing") opts.icon = '/images/star-3.png'
@@ -136,6 +139,8 @@ function addChoice(str) {
             dataObj[str].forEach(function(poi) {
                 if (poi.name === selection) {
                     var marker = drawLocation(poi.place[0].location, str)
+                    bounds.extend(marker.position);
+                    map.fitBounds(bounds);
                     daysChoice[indexOfDay][str + "Locations"].push(marker);
                     markers.push(marker);
                 }
@@ -190,6 +195,7 @@ function getCurrentDay() {
     $('.day-buttons').on('click', '.day', function() {
         //remove all markers from map. 
         clearMarkers();
+        bounds = new google.maps.LatLngBounds();
         var $currentDay = $(".current-day");
         $currentDay.removeClass('current-day');
         $(this).addClass('current-day');
@@ -200,12 +206,15 @@ function getCurrentDay() {
             $s.empty();
             daysChoice[indexOfDay][s].forEach(function(q, index) {
                 daysChoice[indexOfDay][s + "Locations"][index].setMap(map);
+                bounds.extend(daysChoice[indexOfDay][s + "Locations"][index].position);
+                map.fitBounds(bounds);
+                console.log(bounds);
                 $s.append('<div class="itinerary-item"><span class="title">' + q + '</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
             })
         });
-        if (daysChoice[indexOfDay].hotelLocations.length > 0) {
-            map.panTo(daysChoice[indexOfDay].hotelLocations[0].getPosition());
-        }
+        // if (daysChoice[indexOfDay].hotelLocations.length > 0) {
+        //     map.panTo(daysChoice[indexOfDay].hotelLocations[0].getPosition());
+        // }
     })
 }
 
