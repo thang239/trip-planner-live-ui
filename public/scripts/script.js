@@ -89,10 +89,10 @@ var styleArr = [{
 var map;
 var bounds;
 
+var myLatlng = new google.maps.LatLng(40.705786, -74.007672);
 function initialize_gmaps() {
     bounds = new google.maps.LatLngBounds();
     // initialize new google maps LatLng object
-    var myLatlng = new google.maps.LatLng(40.705786, -74.007672);
     // set the map options hash
     var mapOptions = {
         center: myLatlng,
@@ -127,6 +127,10 @@ function clearMarkers() {
     markers.forEach(function(marker) {
         marker.setMap(null);
     })
+    //set the center and zoom again
+    map.setCenter(myLatlng);
+    map.setZoom(13);
+
 }
 
 function addChoice(str) {
@@ -201,6 +205,7 @@ function getCurrentDay() {
         $(this).addClass('current-day');
         $('#day-title span').text("Day " + $(this).text())
         var indexOfDay = Number($('.current-day').text()) - 1;
+        
         arr.forEach(function(s) {
             var $s = $('#' + s + 'Added');
             $s.empty();
@@ -208,14 +213,18 @@ function getCurrentDay() {
                 daysChoice[indexOfDay][s + "Locations"][index].setMap(map);
                 bounds.extend(daysChoice[indexOfDay][s + "Locations"][index].position);
                 map.fitBounds(bounds);
-                console.log(bounds);
                 $s.append('<div class="itinerary-item"><span class="title">' + q + '</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
             })
         });
-        // if (daysChoice[indexOfDay].hotelLocations.length > 0) {
-        //     map.panTo(daysChoice[indexOfDay].hotelLocations[0].getPosition());
-        // }
     })
+}
+
+function isEmptyDay(day){
+    var res = true;
+    for(var key in day){
+        if(day[key].length) res = false;
+    }
+    return res;
 }
 
 function removeDay() {
@@ -224,7 +233,8 @@ function removeDay() {
         if (daysChoice.length === 1) return;
         var indexArray = Number($currentday.text()) - 1;
         daysChoice.splice(indexArray, 1);
-        $currentday.removeClass('current-day')
+        $currentday.removeClass('current-day');
+
         if ($currentday.text() == "1") {
             $currentday.next().addClass('current-day');
             shiftDays($currentday);
