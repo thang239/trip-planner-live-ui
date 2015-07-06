@@ -9,8 +9,18 @@
 			<div id="map-canvas"></div>
 		</div>
 	</div>
+
 	<div id="control-panel" class="col-sm-4 col-lg-3 clearfix">
 		<div class="col-xs-6 col-sm-12">
+
+			<form id = "mapSearch" method = "GET" action= "/map">
+			<div id="locationField">
+				<input name = "mapSearch" id="autocomplete" placeholder="Where to?" type="text"></input>
+			</div>
+				<input type = "submit" value = "Submit"></input>
+			</form>
+
+			
 			<div class="panel panel-default">
 				<div class="panel-body">
 					<div>
@@ -99,10 +109,11 @@
 
 <script>
 {% autoescape false %}
+var city = {{city | json}}
 var dataObj = {}
-dataObj.hotel = {{ all_hotels | json }};
-dataObj.restaurant = {{ all_restaurants | json }};
-dataObj.thing = {{ all_things_to_do | json }};
+// dataObj.hotel = {{ all_hotels | json }};
+// dataObj.restaurant = {{ all_restaurants | json }};
+// dataObj.thing = {{ all_things_to_do | json }};
 {% endautoescape %}
 </script>
 

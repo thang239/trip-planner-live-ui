@@ -17,12 +17,18 @@ var arr = ['hotel', 'restaurant', 'thing'];
 $(document).ready(function() {
     initialize();
     initialize_gmaps();
+    feedData('restaurant');
+    
     arr.forEach(addChoice);
     removeChoice();
     addDay();
     getCurrentDay();
     removeDay();
+
+    // console.log(city);
 });
+
+
 
 
 var styleArr = [{
@@ -107,23 +113,7 @@ function initialize_gmaps() {
     var map_canvas_obj = document.getElementById("map-canvas");
     // initialize a new Google Map with the options
     map = new google.maps.Map(map_canvas_obj, mapOptions);
-    var service = new google.maps.places.PlacesService(map);
-    service.nearbySearch({
-            location: myLatlng,
-            radius: "50000",
-            types: ['store']
-        }, function(results, status) {
-            if (status == google.maps.places.PlacesServiceStatus.OK) {
-                results.forEach(function(place, index) {
-                    console.log(index, place);
-                    new google.maps.Marker({
-                        position: place.geometry.location,
-                        map: map,
-                        title: place.name
-                    })
-                })
-            }
-        })
+   
         // Add the marker to the map
     var marker = new google.maps.Marker({
         position: myLatlng,
@@ -131,6 +121,70 @@ function initialize_gmaps() {
     });
 
 }
+
+function feedData(type){
+
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({'address':city},function(result,status){
+        var location = result[0].geometry.location;
+        setCenterAndZoom(location,13);
+        var request = {
+            location: location,
+            radius: '5000',
+            types: [type]
+        };
+
+        var service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(request, function(results, status) {
+                if (status == google.maps.places.PlacesServiceStatus.OK) {
+                    results.forEach(function(place, index) {
+                        // console.log(index, place);
+                        var getTypeObj = Object.keys(request)[2];
+                        if(dataObj[request.types]===undefined) {dataObj[request.types] = [];
+                        }
+
+                        dataObj[request.types].push(mapData(request.types,place));
+                        // console.log(request.types);
+                        // console.log(place);
+                        appendDataDropdown(request.types,place.name);
+                        // new google.maps.Marker({
+                        //     position: place.geometry.location,
+                        //     map: map,
+                        //     title: place.name
+                        // })
+                    })
+                }
+            })
+    })
+    
+}
+
+function mapData(type,place){
+    var res = {};
+    if(type === 'restaurant'){
+        res.name = place.name;
+        res.place = {
+            address:place.vicinity,
+            city:'New York',
+            state:'NY',
+            phone:0,
+            location:place.geometry.location
+        }
+        res.cuisine = 'America';
+        res.price = place.price_level;
+    }
+
+    return res;
+}
+
+
+
+
+function appendDataDropdown(id,name){
+    // console.log($(id+'Select'));
+    $('#'+id+'Select').append('<option>'+name+'</option>');
+}
+
 
 //google maps manipulation
 function drawLocation(location, typeOfActivity) {
@@ -149,9 +203,14 @@ function clearMarkers() {
             marker.setMap(null);
         })
         //set the center and zoom again
-    map.setCenter(myLatlng);
-    map.setZoom(13);
+    // map.setCenter(myLatlng);
+    // map.setZoom(13);
+    setCenterAndZoom(myLatlng,13);
+}
 
+function setCenterAndZoom(location,zoom){
+    map.setCenter(location);
+    map.setZoom(zoom);
 }
 
 function addChoice(str) {

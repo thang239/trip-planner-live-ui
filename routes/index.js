@@ -3,11 +3,7 @@ var router = require('express').Router();
 var models = require('../models');
 
 
-router.get('/', function(req, res, next) {
-	res.render('homepage')
-})
-
-router.get('/map',
+router.get('/',
 	function(req, res, next) {
 		models.Hotel
 			.find({})
@@ -37,9 +33,15 @@ router.get('/map',
 	},
 	function(req, res) {
 		// all the data attached to res.locals will now be passed to the index template
-		//res.json(req.query.mapSearch)
+		// res.json(req.query.mapSearch)
 		res.render('index');
-	});
+	}
+);
+
+router.get('/map',function(req,res,next){
+	console.log(req.query);
+		res.render('index',{city:req.query.mapSearch});
+})
 
 router.get("/about", function(req, res, next) {
 	res.send("What");
