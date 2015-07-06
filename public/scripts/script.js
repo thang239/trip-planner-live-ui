@@ -89,11 +89,13 @@ var styleArr = [{
 
 var map;
 var bounds;
+var infoWindow = new google.maps.InfoWindow();
+
+var myLatlng = new google.maps.LatLng(40.705786, -74.007672);
 
 function initialize_gmaps() {
     bounds = new google.maps.LatLngBounds();
     // initialize new google maps LatLng object
-    var myLatlng = new google.maps.LatLng(40.705786, -74.007672);
     // set the map options hash
     var mapOptions = {
         center: myLatlng,
@@ -144,8 +146,12 @@ function drawLocation(location, typeOfActivity) {
 
 function clearMarkers() {
     markers.forEach(function(marker) {
-        marker.setMap(null);
-    })
+            marker.setMap(null);
+        })
+        //set the center and zoom again
+    map.setCenter(myLatlng);
+    map.setZoom(13);
+
 }
 
 function addChoice(str) {
@@ -156,10 +162,23 @@ function addChoice(str) {
             var indexOfDay = Number($('.current-day').text()) - 1;
             // adds lat/long for each day added to locations arrays.
             dataObj[str].forEach(function(poi) {
+                // console.log(poi);
                 if (poi.name === selection) {
-                    var marker = drawLocation(poi.place[0].location, str);
+                    var marker = drawLocation(poi.place[0].location, str)
                     bounds.extend(marker.position);
                     map.fitBounds(bounds);
+                    //add event listener for the marker
+                    var contentString = getInfoString(poi, str);
+                    //clear opened window
+                    if (infoWindow) {
+                        infoWindow.close();
+                    }
+                    //set event listener for marker
+                    google.maps.event.addListener(marker, 'click', function() {
+                        infoWindow.setContent(contentString);
+                        infoWindow.open(map, marker);
+                    });
+                    //push the marker to it's day
                     daysChoice[indexOfDay][str + "Locations"].push(marker);
                     markers.push(marker);
                 }
@@ -170,6 +189,30 @@ function addChoice(str) {
     })
 }
 
+function getInfoString(poi, str) {
+    var res = '';
+    res += '<h3>' + poi.name + '</h3>';
+    if (str === 'thing') {
+        res += '<p>Age range: ' + poi.age_range + '</p>';
+    }
+    if (str === 'restaurant') {
+        res += '<p>Cuisine: ' + poi.cuisine + '</p>';
+    }
+    if (str === 'hotel') {
+        res += '<p>' + getStars(poi.num_stars) + '</p>' + '<p>Amenities: ' + poi.amenities + '</p>';
+    }
+    res += '<p>Address: ' + poi.place[0].address + ', ' + poi.place[0].city + '</p>' + '<p>Phone: ' + poi.place[0].phone + '</p>';
+
+    return res;
+}
+
+function getStars(num) {
+    var res = '';
+    for (var i = 0; i < num; i++) {
+        res += '&#127775';
+    }
+    return res;
+}
 
 function removeChoice() {
     //need to remove map ping when you remove a choice
@@ -203,7 +246,6 @@ function addDay() {
             thingLocations: []
         };
         $before++;
-
         $(this).before(' <button class="btn btn-circle day-btn day">' + $before.toString() + '</button> ');
     })
 }
@@ -219,6 +261,7 @@ function getCurrentDay() {
         $(this).addClass('current-day');
         $('#day-title span').text("Day " + $(this).text())
         var indexOfDay = Number($('.current-day').text()) - 1;
+
         arr.forEach(function(s) {
             var $s = $('#' + s + 'Added');
             $s.empty();
@@ -229,10 +272,15 @@ function getCurrentDay() {
                 $s.append('<div class="itinerary-item"><span class="title">' + q + '</span><button class="btn btn-xs btn-danger remove btn-circle">x</button></div>');
             })
         });
-        // if (daysChoice[indexOfDay].hotelLocations.length > 0) {
-        //     map.panTo(daysChoice[indexOfDay].hotelLocations[0].getPosition());
-        // }
     })
+}
+
+function isEmptyDay(day) {
+    var res = true;
+    for (var key in day) {
+        if (day[key].length) res = false;
+    }
+    return res;
 }
 
 function removeDay() {
@@ -241,7 +289,8 @@ function removeDay() {
         if (daysChoice.length === 1) return;
         var indexArray = Number($currentday.text()) - 1;
         daysChoice.splice(indexArray, 1);
-        $currentday.removeClass('current-day')
+        $currentday.removeClass('current-day');
+
         if ($currentday.text() == "1") {
             $currentday.next().addClass('current-day');
             shiftDays($currentday);
